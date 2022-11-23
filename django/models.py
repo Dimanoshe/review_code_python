@@ -2,8 +2,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Users(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Юзер')
+class UserInfo(models.Model):
+    # Каждая строка UserInfo соответствует только одной строке User
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        primary_key=True)
     inn = models.IntegerField(verbose_name='ИНН')
     account = models.FloatField(verbose_name='Счёт')
 
