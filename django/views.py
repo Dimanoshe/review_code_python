@@ -20,7 +20,6 @@ class TransferView(FormView):
         ctx['userlist'] = self.userlist()
 
         amount = float(request.POST['amount'])
-        sum_part = 0
 
         user_from = User.objects.get(id=request.POST['user_from'])
         
@@ -54,7 +53,6 @@ class TransferView(FormView):
                 ctx['op_result'] = 'перевод не выполнен'
 
         else:
-            acc_sum = 0
             ctx['op_result'] = 'На счёте недостаточно средств'
 
         return self.render_to_response(ctx)
