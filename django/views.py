@@ -1,12 +1,10 @@
 from .models import Users
-from .forms import TransferForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import UserInfo
 from django.views.generic.edit import FormView
 
 
 class TransferView(FormView):
     
-    form_class = TransferForm
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
@@ -21,17 +19,21 @@ class TransferView(FormView):
 
         amount = float(request.POST['amount'])
 
-        user_from = User.objects.get(id=request.POST['user_from'])
+        user_from = UserInfo.objects.get(id=request.POST['user_from'])
         
         # ищем сумму на счёте пользователя
+        # Нужно искать первую достаточную сумму
         us = user_from.users_set.all()
 
         if us:
+            # Почему только первый акк? Если нужно только первый можно исп .first()
+            # Лучше выбрать акк с максимальной суммой или размещать в табл акк в
+            # порядке уменьшения суммы --> .first() это акк с самой большой суммой
             acc_sum = us[0].account
 
             inn_to = Users.objects.filter(inn=request.POST['inn_to'])
-            users_count = 0
-            
+            # Здесь надо проверить есть ли inn_to?в
+
             if inn_to and acc_sum >= amount:
                 users_count = len(inn_to)
                 sum_part = round(amount / users_count, 2)
@@ -58,9 +60,9 @@ class TransferView(FormView):
         return self.render_to_response(ctx)
 
     def userlist(self):
+         # Можно сразу заполнять лист как list comprehension
         user_list = []
-
-        for i in User.objects.all():
+        for i in UserInfo.objects.all():
             cur_user = {}
             cur_user['id'] = i.id
             cur_user['username'] = i.username
